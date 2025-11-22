@@ -17,6 +17,7 @@ public class PostsItemResponse {
 
     private Long id;
     private String topicCode;
+    private String topicLabel;
     private String content;
     private String userNickname;
 
@@ -24,6 +25,7 @@ public class PostsItemResponse {
         return new PostsItemResponse(
                 posts.getId(),
                 posts.getTopic().getCode(),
+                posts.getTopic().getLabel(),
                 posts.getContent(),
                 posts.getUser().getNickname()
         );
