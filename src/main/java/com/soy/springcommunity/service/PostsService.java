@@ -135,7 +135,9 @@ public class PostsService {
         ensureUserIsPostWriter(posts.getUser().getId(), userId);
         validatePostEditRequest(postEditRequest);
         editPostContent(posts, postEditRequest.getPostContent());
-        editPostImgUrl(posts, postEditRequest.getPostImgUrl());
+        if (postEditRequest.getPostImgUrl()!=null) {
+            editPostImgUrl(posts, postEditRequest.getPostImgUrl());
+        }
         posts.updateModifiedAt();
         return SimpleResponse.forEditPost(userId, postId);
     }
