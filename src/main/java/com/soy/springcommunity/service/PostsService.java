@@ -117,8 +117,8 @@ public class PostsService {
 
     public void validatePostEditRequest(PostsEditRequest postEditRequest) {
         if(
-                StringUtils.hasText(postEditRequest.getPostContent()) &&
-                StringUtils.hasText(postEditRequest.getPostImgUrl())){
+                !StringUtils.hasText(postEditRequest.getPostContent()) &&
+                !StringUtils.hasText(postEditRequest.getPostImgUrl())){
             throw new PostsException.NoEditPostsException("수정할 내용이 없습니다.");
         }
     }
