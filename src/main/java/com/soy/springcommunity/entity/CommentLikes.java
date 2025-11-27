@@ -8,7 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "comment_likes")
+@Table(
+        name = "comment_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "comment_id"})
+        }
+)
 public class CommentLikes extends BaseLikes {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")

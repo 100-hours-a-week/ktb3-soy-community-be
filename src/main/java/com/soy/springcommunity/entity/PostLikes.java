@@ -10,7 +10,12 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "post_likes")
+@Table(
+        name = "post_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "post_id"})
+        }
+)
 public class PostLikes extends BaseLikes{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

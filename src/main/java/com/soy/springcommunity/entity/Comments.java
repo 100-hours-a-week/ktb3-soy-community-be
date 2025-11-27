@@ -40,6 +40,7 @@ public class Comments {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -55,8 +56,7 @@ public class Comments {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void updateCommentBody(String newBody) {
-        this.body = newBody;
+    public void updateCommentBody(String newBody) {this.body = newBody;
     }
 }
 

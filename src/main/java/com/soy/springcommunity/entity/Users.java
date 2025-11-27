@@ -51,9 +51,6 @@ public class Users {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CommentLikes> commentLikes;
 
-//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    private UserDetail userDetail;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private FilesUserProfileImgUrl filesUserProfileImgUrl;
 
@@ -66,13 +63,6 @@ public class Users {
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();
     }
-
-//    public void setUserDetail(UserDetail userDetail) {
-//        this.userDetail = userDetail;
-//        if (userDetail.getUser() != this) {
-//            userDetail.setUser(this);
-//        }
-//    }
 
     protected void markUpdated(){
         this.updatedAt = LocalDateTime.now();
