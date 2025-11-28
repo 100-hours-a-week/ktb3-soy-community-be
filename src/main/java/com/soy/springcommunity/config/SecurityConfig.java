@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -51,7 +53,8 @@ public class SecurityConfig{
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/auth").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/users/auth", "/api/users").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterAt(jsonFilter, UsernamePasswordAuthenticationFilter.class);
@@ -64,9 +67,16 @@ public class SecurityConfig{
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5501"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5501"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Content-Type",
+                "X-XSRF-TOKEN",
+                "X-CSRF-TOKEN",
+                "Accept",
+                "Authorization"
+                ));
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
