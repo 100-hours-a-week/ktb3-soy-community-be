@@ -47,8 +47,11 @@ public class PostsController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 상세 보기 성공")
     })
-    public ResponseEntity<PostsDetailResponse> getPostDetail(@PathVariable("postId") Long postId, @RequestParam Long userId) {
-        PostsDetailResponse PostsDetailResponse = postsService.viewPostDetail(postId, userId);
+    public ResponseEntity<PostsDetailResponse> getPostDetail(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("postId") Long postId
+    ) {
+        PostsDetailResponse PostsDetailResponse = postsService.viewPostDetail(userDetails, postId);
         return ResponseEntity.ok(PostsDetailResponse);
     }
 

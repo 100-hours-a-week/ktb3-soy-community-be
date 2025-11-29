@@ -71,7 +71,8 @@ public class PostsService {
     }
 
     @Transactional
-    public PostsDetailResponse viewPostDetail(Long postId, Long userId) {
+    public PostsDetailResponse viewPostDetail(CustomUserDetails userDetails, Long postId) {
+        Long userId = userDetails.getUser().getId();
         Posts post = postsRepository.findById(postId)
                 .orElseThrow(() -> new PostsException.PostsNotFoundException("존재하지 않는 게시글입니다."));
         post.getPostStats().increaseViewCount();
