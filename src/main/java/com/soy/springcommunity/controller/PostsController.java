@@ -5,6 +5,7 @@ import com.soy.springcommunity.service.PostsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class PostsController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "게시글 생성 성공")
     })
-    public ResponseEntity<PostsCreateResponse> createPost(@RequestParam Long userId, @RequestBody PostsCreateRequest PostsCreateRequest) {
+    public ResponseEntity<PostsCreateResponse> createPost(@RequestParam Long userId, @Valid @RequestBody PostsCreateRequest PostsCreateRequest) {
         PostsCreateResponse postCreateResponse = postsService.createPost(userId, PostsCreateRequest);
         return ResponseEntity
                 .created(URI.create(postCreateResponse.getRedirectUri()))
@@ -57,7 +58,7 @@ public class PostsController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "게시글 수정 성공")
     })
-    public ResponseEntity<SimpleResponse> editPost(@PathVariable("postId") Long postId, @RequestParam Long userId, @RequestBody PostsEditRequest postEditRequest) {
+    public ResponseEntity<SimpleResponse> editPost(@PathVariable("postId") Long postId, @RequestParam Long userId, @Valid @RequestBody PostsEditRequest postEditRequest) {
         SimpleResponse simpleResponse = postsService.editPost(postId, userId, postEditRequest);
         return ResponseEntity.ok(simpleResponse);
     }

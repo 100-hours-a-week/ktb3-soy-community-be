@@ -10,12 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "post_likes")
-@NamedEntityGraph(
-        name = "PostLikes.withPostAndUser",
-        attributeNodes = {
-                @NamedAttributeNode("post"),
-                @NamedAttributeNode("user")
+@Table(
+        name = "post_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "post_id"})
         }
 )
 public class PostLikes extends BaseLikes{

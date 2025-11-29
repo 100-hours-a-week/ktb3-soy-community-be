@@ -2,6 +2,7 @@ package com.soy.springcommunity.controller;
 
 import com.soy.springcommunity.dto.*;
 import com.soy.springcommunity.service.CommentsService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class CommentsController {
     }
 
     @PostMapping("/api/posts/{postId}/comments")
-    public ResponseEntity<CommentsCreateResponse> createComments(@RequestBody CommentsCreateRequest createCommentRequest,
+    public ResponseEntity<CommentsCreateResponse> createComments(@Valid @RequestBody CommentsCreateRequest createCommentRequest,
                                                                  @PathVariable("postId") Long postId,
                                                                  @RequestParam Long userId,
                                                                  @RequestParam(value = "commentId" , required = false) Long parentCommentId) {
@@ -34,7 +35,7 @@ public class CommentsController {
     }
 
     @PatchMapping("/api/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<SimpleResponse> editComments(@RequestBody CommentsEditRequest editCommentRequest,
+    public ResponseEntity<SimpleResponse> editComments(@Valid @RequestBody CommentsEditRequest editCommentRequest,
                                                        @PathVariable("postId") Long postId,
                                                        @PathVariable("commentId") Long commentId,
                                                        @RequestParam Long userId){

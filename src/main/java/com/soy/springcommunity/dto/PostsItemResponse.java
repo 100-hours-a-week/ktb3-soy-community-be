@@ -1,5 +1,6 @@
 package com.soy.springcommunity.dto;
 
+import com.soy.springcommunity.entity.FilesUserProfileImgUrl;
 import com.soy.springcommunity.entity.PostStats;
 import com.soy.springcommunity.entity.Posts;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,24 +17,22 @@ import java.time.LocalDateTime;
 public class PostsItemResponse {
 
     private Long id;
-    private String title;
-    private LocalDateTime createdAt;
+    private String topicCode;
+    private String topicLabel;
+    private String content;
+    private String postImgUrl;
     private String userNickname;
     private String userProfileImgUrl;
-    private Long statsViewCounts;
-    private Long statsLikeCounts;
-    private Long statsCommentCounts;
 
     public static PostsItemResponse from(Posts posts) {
         return new PostsItemResponse(
                 posts.getId(),
-                posts.getTitle(),
-                posts.getCreatedAt(),
+                posts.getTopic().getCode(),
+                posts.getTopic().getLabel(),
+                posts.getContent(),
+                posts.getFilesPostImgUrl().getImgUrl(),
                 posts.getUser().getNickname(),
-                posts.getUser().getFilesUserProfileImgUrl().getImgUrl(),
-                posts.getPostStats().getViewCount(),
-                posts.getPostStats().getLikeCount(),
-                posts.getPostStats().getCommentCount()
+                posts.getUser().getFilesUserProfileImgUrl().getImgUrl()
         );
     }
 }

@@ -1,16 +1,15 @@
 package com.soy.springcommunity.service;
 
 import com.soy.springcommunity.dto.*;
-import com.soy.springcommunity.entity.FilesPostImgUrl;
-import com.soy.springcommunity.entity.PostStats;
-import com.soy.springcommunity.entity.Posts;
-import com.soy.springcommunity.entity.Users;
+import com.soy.springcommunity.entity.*;
 import com.soy.springcommunity.exception.PostsException;
+import com.soy.springcommunity.exception.TopicsException;
 import com.soy.springcommunity.exception.UsersException;
 import com.soy.springcommunity.repository.files.FilesPostImgRepository;
 import com.soy.springcommunity.repository.likes.PostLikesRepository;
 import com.soy.springcommunity.repository.posts.PostsRepository;
 import com.soy.springcommunity.repository.posts.PostsStatsReposiotry;
+import com.soy.springcommunity.repository.topics.TopicsRepository;
 import com.soy.springcommunity.repository.users.UsersRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -33,6 +32,7 @@ public class PostsService {
 
     private PostsRepository postsRepository;
     private UsersRepository usersRepository;
+    private TopicsRepository topicsRepository;
     private PostsStatsReposiotry postsStatsReposiotry;
     private PostLikesRepository postLikesRepository;
     private FilesPostImgRepository filesPostImgRepository;
@@ -40,11 +40,13 @@ public class PostsService {
     @Autowired
     public PostsService(PostsRepository postsRepository,
                         UsersRepository usersRepository,
+                        TopicsRepository topicsRepository,
                         PostsStatsReposiotry postsStatsReposiotry,
                         PostLikesRepository postLikesRepository,
                         FilesPostImgRepository filesPostImgRepository) {
         this.postsRepository = postsRepository;
         this.usersRepository = usersRepository;
+        this.topicsRepository = topicsRepository;
         this.postsStatsReposiotry = postsStatsReposiotry;
         this.filesPostImgRepository = filesPostImgRepository;
         this.postLikesRepository = postLikesRepository;
@@ -82,9 +84,17 @@ public class PostsService {
         Users user = usersRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(()-> new UsersException.UsersNotFoundException("존재하지않는 유저입니다."));
 
+        String topicCode = postsCreateRequest.getTopicCode();
+        String postContent = postsCreateRequest.getPostContent();
+
+        Topics topic = topicsRepository.findByCode(topicCode)
+                .orElseThrow(() -> new TopicsException.CodeNotFoundException("유효하지 않은 토픽입니다."));
+
+        topic.increasePostCounts();
+
         Posts post = Posts.builder()
-                .title(postsCreateRequest.getPostTitle())
-                .body(postsCreateRequest.getPostContent())
+                .content(postContent)
+                .topic(topic)
                 .user(user).build();
 
         PostStats postStats = PostStats.createStats(post);
@@ -106,20 +116,19 @@ public class PostsService {
     }
 
     public void validatePostEditRequest(PostsEditRequest postEditRequest) {
-        if((postEditRequest.getPostTitle()==null || postEditRequest.getPostTitle().isEmpty()) &&
-                (postEditRequest.getPostContent()==null || postEditRequest.getPostContent().isEmpty()) &&
-                (postEditRequest.getPostImageUrl()==null || postEditRequest.getPostImageUrl().isEmpty())){
+        if(
+                !StringUtils.hasText(postEditRequest.getPostContent()) &&
+                !StringUtils.hasText(postEditRequest.getPostImgUrl())){
             throw new PostsException.NoEditPostsException("수정할 내용이 없습니다.");
         }
     }
 
-    public void editPostTitle(Posts posts, String newTitle) {
-        posts.updatePostTitle(newTitle);
-    }
 
     public void editPostContent(Posts posts, String newContent) {
         posts.updatePostContent(newContent);
     }
+
+    public void editPostImgUrl(Posts posts, String newImageUrl) {posts.getFilesPostImgUrl().updateImgUrl(newImageUrl);}
 
     @Transactional
     public SimpleResponse editPost(Long postId, Long userId, PostsEditRequest postEditRequest) {
@@ -127,9 +136,10 @@ public class PostsService {
                 .orElseThrow(() -> new PostsException.PostsNotFoundException("존재하지 않는 게시글입니다."));
         ensureUserIsPostWriter(posts.getUser().getId(), userId);
         validatePostEditRequest(postEditRequest);
-        editPostTitle(posts, postEditRequest.getPostTitle());
         editPostContent(posts, postEditRequest.getPostContent());
-//        editPostImgUrl(posts, postEditRequest.getPostImageUrl());
+        if (postEditRequest.getPostImgUrl()!=null) {
+            editPostImgUrl(posts, postEditRequest.getPostImgUrl());
+        }
         posts.updateModifiedAt();
         return SimpleResponse.forEditPost(userId, postId);
     }

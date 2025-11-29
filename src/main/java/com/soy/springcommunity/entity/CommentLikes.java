@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "comment_likes")
-@NamedEntityGraph(
-        name = "CommentLikes.withCommentAndUser",
-        attributeNodes = {
-                @NamedAttributeNode("comment"),
-                @NamedAttributeNode("user")
+@Table(
+        name = "comment_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"user_id", "comment_id"})
         }
 )
 public class CommentLikes extends BaseLikes {

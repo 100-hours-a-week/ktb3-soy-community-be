@@ -15,7 +15,7 @@ public class UsersSignUpRequest {
     @Pattern(regexp= ConstantUtil.REGEX_EMAIL, message = ConstantUtil.MSG_EMAIL_NOT_VALID)
     private String userEmail;
 
-    @NotBlank()
+    @NotBlank
     @Pattern(regexp = ConstantUtil.REGEX_PASSWORD, message = ConstantUtil.MSG_PW_NOT_VALID)
     private String userPassword;
 

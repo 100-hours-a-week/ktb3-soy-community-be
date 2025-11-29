@@ -12,21 +12,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "comments")
-@NamedEntityGraphs({
-    @NamedEntityGraph(
-            name = "Comments.withPosts",
-            attributeNodes = {
-                    @NamedAttributeNode("post")
-            }
-    ),
-    @NamedEntityGraph(
-            name = "Comments.withUsers",
-            attributeNodes = {
-                    @NamedAttributeNode("user")
-            }
-    )
-})
-
 public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +40,7 @@ public class Comments {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
