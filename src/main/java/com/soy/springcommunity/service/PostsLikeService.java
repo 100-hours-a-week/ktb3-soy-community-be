@@ -1,6 +1,7 @@
 package com.soy.springcommunity.service;
 
 import com.soy.springcommunity.dto.LikesSimpleResponse;
+import com.soy.springcommunity.entity.CustomUserDetails;
 import com.soy.springcommunity.entity.PostLikes;
 import com.soy.springcommunity.entity.Posts;
 import com.soy.springcommunity.entity.Users;
@@ -36,7 +37,8 @@ public class PostsLikeService implements LikesService {
 
     @Transactional
     @Override
-    public LikesSimpleResponse like(Long contentId, Long userId) {
+    public LikesSimpleResponse like(CustomUserDetails userDetails, Long contentId) {
+        Long userId = userDetails.getUser().getId();
         if (postsLikesRepository.existsByPostIdAndUserId(contentId, userId)) {
             throw new LikesException.AlreadyLikedException("이미 좋아요한 게시글입니다.");
         }
@@ -60,7 +62,8 @@ public class PostsLikeService implements LikesService {
 
     @Transactional
     @Override
-    public LikesSimpleResponse unlike(Long contentId, Long userId) {
+    public LikesSimpleResponse unlike(CustomUserDetails userDetails, Long contentId) {
+        Long userId = userDetails.getUser().getId();
         PostLikes checkPostLikes = postsLikesRepository.findByPostIdAndUserIdAndDeletedAtIsNull(contentId, userId)
                 .orElseThrow(()-> new LikesException.NotFoundException("좋아요 정보를 확인하세요"));
 
