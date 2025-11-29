@@ -112,6 +112,7 @@ public class CommentsService {
         ensureCommentMatchUser(comment.getUser().getId(), userId);
         ensureCommentMatchPost(comment.getPost().getId(), postId);
         editCommentBody(comment, editCommentRequest.getNewCommentContent());
+        comment.markUpdatedAt();
         return SimpleResponse.forEditComment(userId, commentId);
     }
 
@@ -128,6 +129,7 @@ public class CommentsService {
         ensureCommentMatchPost(comment.getPost().getId(), postId);
         comment.getPost().getPostStats().decreaseCommentCount();
         commentsRepository.delete(comment);
+        comment.markDeletedAt();
         return SimpleResponse.forDeleteComment(userId, commentId);
     }
 

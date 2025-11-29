@@ -59,5 +59,13 @@ public class Comments {
     public void updateCommentBody(String newBody) {
         this.body = newBody;
     }
+
+    public void markUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void markDeletedAt(){
+        this.updatedAt = LocalDateTime.now();
+    }
 }
 
