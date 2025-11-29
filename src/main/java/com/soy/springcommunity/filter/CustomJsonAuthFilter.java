@@ -1,12 +1,7 @@
 package com.soy.springcommunity.filter;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soy.springcommunity.dto.LoginRequest;
 import com.soy.springcommunity.dto.UsersSignInRequest;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,14 +11,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
-
 public class CustomJsonAuthFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomJsonAuthFilter(AuthenticationManager authenticationManager) {
         super.setAuthenticationManager(authenticationManager);
-        setFilterProcessesUrl("/api/users/auth");
+        setFilterProcessesUrl("/api/auth/login");
     }
 
     @Override

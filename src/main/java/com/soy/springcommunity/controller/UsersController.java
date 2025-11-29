@@ -1,6 +1,7 @@
 package com.soy.springcommunity.controller;
 
 import com.soy.springcommunity.dto.*;
+import com.soy.springcommunity.entity.CustomUserDetails;
 import com.soy.springcommunity.entity.Users;
 import com.soy.springcommunity.service.FilesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,10 +13,14 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 @RestController
@@ -41,38 +46,30 @@ public class UsersController {
                 signUpResponse);
     }
 
-    @PostMapping("/auth")
-    public ResponseEntity<ApiCommonResponse<UsersSignInResponse>> login(@RequestBody LoginRequest req, HttpSession session) {
-
-        UsersSignInResponse signInResponse = usersService.signIn(req);
-
-        // 🔥 로그인 성공 → 세션에 사용자 정보 저장
-        session.setAttribute("user", req.getEmail());
-
-        return UsersApiResponse.created(HttpStatus.CREATED,
-                "로그인 성공",
-                signInResponse);
-    }
-
     @Operation(summary = "비밀번호 변경")
-    @PatchMapping("/{id}/password")
+    @PatchMapping("/me/password")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공")
     })
-    public ResponseEntity<ApiCommonResponse<UsersSimpleResponse>> editPassword(@PathVariable Long id, @Valid @RequestBody UsersEditPasswordRequest UsersEditPasswordRequest) {
-        UsersSimpleResponse UsersSimpleResponse = usersService.editPassword(id, UsersEditPasswordRequest);
+    public ResponseEntity<ApiCommonResponse<UsersSimpleResponse>> editPassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UsersEditPasswordRequest usersEditPasswordRequest) {
+        UsersSimpleResponse UsersSimpleResponse = usersService.editPassword(userDetails, usersEditPasswordRequest);
+
         return UsersApiResponse.ok(HttpStatus.OK,
                 "비밀번호 변경 성공",
                 UsersSimpleResponse);
     }
 
     @Operation(summary = "프로필 변경")
-    @PatchMapping("/{id}/profile")
+    @PatchMapping("/me/profile")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 변경 성공")
     })
-    public ResponseEntity<ApiCommonResponse<UsersSimpleResponse>> editProfile(@Valid @RequestBody UsersEditProfileRequest usersEditProfileRequest, @PathVariable Long id) {
-        UsersSimpleResponse UsersSimpleResponse = usersService.editProfile(id, usersEditProfileRequest);
+    public ResponseEntity<ApiCommonResponse<UsersSimpleResponse>> editProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UsersEditProfileRequest usersEditProfileRequest) {
+        UsersSimpleResponse UsersSimpleResponse = usersService.editProfile(userDetails, usersEditProfileRequest);
         return UsersApiResponse.ok(HttpStatus.OK,
                 "프로필 변경 성공",
                 UsersSimpleResponse);

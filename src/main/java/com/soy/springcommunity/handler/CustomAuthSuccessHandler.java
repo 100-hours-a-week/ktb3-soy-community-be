@@ -21,25 +21,10 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    protected void setSession(Authentication authentication, HttpServletRequest request) {
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-
-        HttpSession session = request.getSession(true);
-        session.setMaxInactiveInterval(3600);
-        session.setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                context
-        );
-    }
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-
-        setSession(authentication, request);
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Users user = (Users) userDetails.getUser();
@@ -52,7 +37,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         );
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("application/json");
 
         String json = this.mapper.writeValueAsString(usersSignInResponse);
         response.getWriter().write(json);
