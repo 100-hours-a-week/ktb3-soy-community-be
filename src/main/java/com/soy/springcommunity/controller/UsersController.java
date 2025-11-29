@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,9 +51,11 @@ public class UsersController {
             @RequestPart("data") @Valid UsersSignUpRequest usersSignUpRequest,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
             ) throws IOException {
+
         String userProfileImgUrl = URL_DEFAULT_USER_PROFILE;
-        if (!profileImage.isEmpty()) {
+        try{
             userProfileImgUrl = filesService.saveFile(profileImage);
+        } catch (NullPointerException e) {
         }
 
         UsersSignUpResponse signUpResponse = usersService.signup(usersSignUpRequest, userProfileImgUrl);
