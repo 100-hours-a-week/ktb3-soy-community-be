@@ -146,7 +146,8 @@ public class PostsService {
     }
 
     @Transactional
-    public SimpleResponse deletePost(Long postId, Long userId) {
+    public SimpleResponse deletePost(CustomUserDetails userDetails, Long postId) {
+        Long userId = userDetails.getUser().getId();
         Posts posts = postsRepository.findById(postId)
                 .orElseThrow(() -> new PostsException.PostsNotFoundException("존재하지 않는 게시글입니다."));
         ensureUserIsPostWriter(posts.getUser().getId(), userId);

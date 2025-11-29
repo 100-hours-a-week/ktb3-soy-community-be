@@ -98,8 +98,10 @@ public class PostsController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 삭제 성공")
     })
-    public ResponseEntity<SimpleResponse> deletePost(@PathVariable("postId") Long postId, @RequestParam Long userId) {
-        SimpleResponse simpleResponse = postsService.deletePost(postId, userId);
+    public ResponseEntity<SimpleResponse> deletePost(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("postId") Long postId) {
+        SimpleResponse simpleResponse = postsService.deletePost(userDetails, postId);
         return ResponseEntity.ok(simpleResponse);
     }
 }
