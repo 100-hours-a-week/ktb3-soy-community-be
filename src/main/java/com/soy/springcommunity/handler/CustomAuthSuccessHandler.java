@@ -45,7 +45,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         );
 
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
 
         String json = this.mapper.writeValueAsString(usersSignInResponse);
         response.getWriter().write(json);
