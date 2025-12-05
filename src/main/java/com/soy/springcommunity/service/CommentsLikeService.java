@@ -30,7 +30,8 @@ public class CommentsLikeService implements LikesService {
 
     @Transactional
     @Override
-    public LikesSimpleResponse like(Long contentId, Long userId) {
+    public LikesSimpleResponse like(CustomUserDetails userDetails, Long contentId) {
+        Long userId = userDetails.getUser().getId();
         if (commentLikesRepository.existsByCommentIdAndUserId(contentId, userId)) {
             throw new LikesException.AlreadyLikedException("이미 좋아요한 댓글입니다.");
         }
@@ -54,7 +55,8 @@ public class CommentsLikeService implements LikesService {
 
     @Transactional
     @Override
-    public LikesSimpleResponse unlike(Long contentId, Long userId) {
+    public LikesSimpleResponse unlike(CustomUserDetails userDetails, Long contentId) {
+        Long userId = userDetails.getUser().getId();
         CommentLikes checkCommentLikes = commentLikesRepository.findByCommentIdAndUserIdAndDeletedAtIsNull(contentId, userId)
                 .orElseThrow(()-> new LikesException.AlreadyLikedException("이미 좋아요한 게시글입니다."));
         checkCommentLikes.deleteLikes();

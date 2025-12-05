@@ -3,6 +3,7 @@ package com.soy.springcommunity.entity;
 import com.soy.springcommunity.utils.PasswordUtil;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,10 @@ public class Users {
 
     @Column(name = "password_hash", length = 60, nullable = false)
     private String passwordHash;
+
+    @Column(name="role")
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     @Column(name = "nickname", length = 10, nullable = false, unique = true)
     private String nickname;
@@ -58,7 +63,7 @@ public class Users {
     @Builder
     public Users(String email, String password, String nickname){
         this.email = email;
-        this.passwordHash = PasswordUtil.getHashedPassword(password);
+        this.passwordHash = password;
         this.nickname = nickname;
         this.isDeleted = false;
         this.createdAt = LocalDateTime.now();

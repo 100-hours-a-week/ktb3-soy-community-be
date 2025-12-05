@@ -1,10 +1,12 @@
 package com.soy.springcommunity.controller;
 
+import com.soy.springcommunity.entity.CustomUserDetails;
 import com.soy.springcommunity.service.FilesService;
 import com.soy.springcommunity.service.PostsService;
 import com.soy.springcommunity.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,18 +29,20 @@ public class FilesController {
         this.filesService = filesService;
     }
 
-    @PostMapping("/api/users/{userId}/profile")
+    @PostMapping("/api/users/me/profile-image")
     public ResponseEntity<Map<String, String>> uploadProfile(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart("file") MultipartFile file) throws IOException {
         String url = filesService.saveFile(file);
-        usersService.updateProfileImage(userId, url);
+        usersService.updateProfileImage(userDetails, url);
         return ResponseEntity.ok(Map.of("profileImgUrl", url));
     }
 
-    @PostMapping("/api/posts/{postId}")
+    @PostMapping("/api/posts/{postId}/image")
     public ResponseEntity<Map<String, String>> uploadPostImg(
-            @PathVariable Long postId, @RequestPart("file") MultipartFile file) throws IOException {
+            @PathVariable Long postId,
+            @RequestPart("file") MultipartFile file
+    ) throws IOException {
         String url = filesService.saveFile(file);
         postsService.updatePostImage(postId, url);
         return ResponseEntity.ok(Map.of("profileImgUrl", url));

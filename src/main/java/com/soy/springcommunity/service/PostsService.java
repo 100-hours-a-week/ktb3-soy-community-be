@@ -71,7 +71,8 @@ public class PostsService {
     }
 
     @Transactional
-    public PostsDetailResponse viewPostDetail(Long postId, Long userId) {
+    public PostsDetailResponse viewPostDetail(CustomUserDetails userDetails, Long postId) {
+        Long userId = userDetails.getUser().getId();
         Posts post = postsRepository.findById(postId)
                 .orElseThrow(() -> new PostsException.PostsNotFoundException("존재하지 않는 게시글입니다."));
         post.getPostStats().increaseViewCount();
@@ -80,7 +81,7 @@ public class PostsService {
     }
 
     @Transactional
-    public PostsCreateResponse createPost(Long userId, PostsCreateRequest postsCreateRequest) {
+    public PostsCreateResponse createPost(Long userId, PostsCreateRequest postsCreateRequest, String postImgUrl) {
         Users user = usersRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(()-> new UsersException.UsersNotFoundException("존재하지않는 유저입니다."));
 
@@ -99,7 +100,7 @@ public class PostsService {
 
         PostStats postStats = PostStats.createStats(post);
 
-        FilesPostImgUrl filesPostImgUrl = FilesPostImgUrl.of(post, URL_DEFAULT_POST_IMG);
+        FilesPostImgUrl filesPostImgUrl = FilesPostImgUrl.of(post, postImgUrl);
 
         postsRepository.save(post);
         postsStatsReposiotry.save(postStats);
@@ -145,7 +146,8 @@ public class PostsService {
     }
 
     @Transactional
-    public SimpleResponse deletePost(Long postId, Long userId) {
+    public SimpleResponse deletePost(CustomUserDetails userDetails, Long postId) {
+        Long userId = userDetails.getUser().getId();
         Posts posts = postsRepository.findById(postId)
                 .orElseThrow(() -> new PostsException.PostsNotFoundException("존재하지 않는 게시글입니다."));
         ensureUserIsPostWriter(posts.getUser().getId(), userId);
